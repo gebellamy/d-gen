@@ -1,0 +1,18 @@
+img, canvas {
+	/*TODO: LOL not this*/
+	position: absolute;
+	top: 100;
+	left: 100;
+}
+
+img {
+	display: none;
+}
+
+#type-selectors {
+	margin-left: 50px;
+}
+
+#type-selectors select {
+	min-width: 75px;
+}
