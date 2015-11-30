@@ -1,15 +1,38 @@
 function Generator() {
-	// TODO: Randomize all
-	this.bodyType = 1;
-	this.wingType = 1;
-	this.color = '#499df5';
+	this.randomize();
 
 	$('#color-selector').val(this.color);
 	this.positioner = new Positioner();
 }
 
+Generator.prototype.randomize = function randomizeFunc() {
+	this.randomizeBodyType();
+	this.randomizeWingType();
+	this.randomizeColor();
+}
+
+Generator.prototype.randomizeBodyType = function randomzeBodyFunc() {
+	this.bodyType = Math.floor(Math.random() * (IMAGE_MAP.bodyCount)) + 1;
+}
+
+Generator.prototype.randomizeWingType = function randomizeWingFunc() {
+	var count = IMAGE_MAP[this.bodyType].wingCount;
+	this.wingType = Math.floor(Math.random() * count) + 1;
+}
+
+Generator.prototype.randomizeColor = function randomizeColorFunc() {
+	var r = Math.floor(Math.random() * 256);
+	var g = Math.floor(Math.random() * 256);
+	var b = Math.floor(Math.random() * 256);
+
+	r = r.toString(16);
+	g = g.toString(16);
+	b = b.toString(16);
+
+	this.color = '#' + r + g + b;
+}
+
 Generator.prototype.render = function renderFunc() {
-	// TODO: Create canvas element and place images on canvas?
 	this.positioner.placeImages(this.bodyType, this.wingType, this.color);
 	this.updateSelects();
 }
