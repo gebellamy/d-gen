@@ -4,38 +4,14 @@ function Generator() {
 	this.wingType = 1;
 	this.color = '#499df5';
 
+	$('#color-selector').val(this.color);
 	this.positioner = new Positioner();
 }
 
 Generator.prototype.render = function renderFunc() {
 	// TODO: Create canvas element and place images on canvas?
-	// Investigate: use caman.js for colorification?
-	this.images = this.positioner.placeImages(this.bodyType, this.wingType);
-	this.setColors();
+	this.positioner.placeImages(this.bodyType, this.wingType, this.color);
 	this.updateSelects();
-}
-
-Generator.prototype.setColors = function setColorsFunc() {
-	var color = this.color;
-	$('#color-selector').val(color);
-
-	Caman('#body-image img', function() {
-		this.newLayer(function() {
-			this.setBlendingMode('multiply');
-			this.fillColor(color);
-		});
-
-		this.render();
-	});
-
-	Caman('#wing-image img', function() {
-		this.newLayer(function() {
-			this.setBlendingMode('multiply');
-			this.fillColor(color);
-		});
-
-		this.render();
-	});
 }
 
 Generator.prototype.updateColors = function updateColorsFunc() {
@@ -106,7 +82,7 @@ Generator.prototype.updateWing = function updateWingFunc(wingType) {
 	// Only re-render on an actual change
 	if (wingType !== this.wingType) {
 		this.wingType = wingType;
-		this.render();
+		this.renderWing();
 	}
 }
 

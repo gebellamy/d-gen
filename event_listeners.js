@@ -7,8 +7,11 @@ $(document).ready(function() {
 		window.generator.updateWing($(this).val());
 	});
 
-	$('#color-selector').on('input', function colorChangeFunc() {
-		window.generator.color = ($(this).val());
-		window.generator.updateColors();
+	$('#color-selector').on('blur', function colorChangeFunc() {
+		var color = $(this).val();
+		if (window.generator.color !== color) {
+			window.generator.color = color;
+			window.generator.updateColors();
+		}
 	});
 });

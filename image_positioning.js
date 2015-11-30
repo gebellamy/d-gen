@@ -34,34 +34,26 @@ var IMAGE_MAP = {
 
 function Positioner() {}
 
-Positioner.prototype.placeImages = function positionFunc(bodyType, wingType) {
-	// TODO: Include tail, use positioning?, use caman.js?
-	console.log('placeImages');
+Positioner.prototype.placeImages = function positionFunc(bodyType, wingType, color) {
 	var body = IMAGE_MAP[bodyType];
 	var wing = body[wingType];
 
-	var bodyImage = $('#body-image img');
-	var wingImage = $('#wing-image img');
-	console.log(bodyImage);
+	var bodyCanvas = $('#body-image canvas');
+	var wingCanvas = $('#wing-image canvas');
 
-	if (!bodyImage || bodyImage.length <= 0) {
-		console.log('empty body');
-		$('#body-image').empty();
-		$('#body-image').html('<img src="" />');
-		bodyImage = $('#body-image img');
-	}
+	Caman('#body-image canvas', body.imgSrc, function() {
+		this.newLayer(function() {
+			this.setBlendingMode('multiply');
+			this.fillColor(color);
+		});
+		this.render();
+	});
 
-	if (!wingImage || wingImage.length <= 0) {
-		$('#wing-image').empty();
-		$('#wing-image').html('<img src="" />');
-		wingImage = $('#wing-image img');
-	}
-
-	bodyImage.attr('src', body.imgSrc);
-	wingImage.attr('src', wing.imgSrc);
-
-	return {
-		body: bodyImage,
-		wing: wingImage
-	};
+	Caman('#wing-image canvas', wing.imgSrc, function() {
+		this.newLayer(function() {
+			this.setBlendingMode('multiply');
+			this.fillColor(color);
+		});
+		this.render();
+	});
 }
