@@ -8,7 +8,8 @@ function Generator() {
 Generator.prototype.randomize = function randomizeFunc() {
 	this.randomizeBodyType();
 	this.randomizeWingType();
-	this.randomizeColor();
+	this.randomizeMarkings();
+	this.color = getRandomizedColor();
 }
 
 Generator.prototype.randomizeBodyType = function randomzeBodyFunc() {
@@ -20,20 +21,31 @@ Generator.prototype.randomizeWingType = function randomizeWingFunc() {
 	this.wingType = Math.floor(Math.random() * count) + 1;
 }
 
-Generator.prototype.randomizeColor = function randomizeColorFunc() {
-	var r = Math.floor(Math.random() * 256);
-	var g = Math.floor(Math.random() * 256);
-	var b = Math.floor(Math.random() * 256);
+Generator.prototype.randomizeMarkings = function randomizeMarkingsFunc() {
+	var marking = {};
+	var count = IMAGE_MAP[this.bodyType].markings.length;
+	var idx = Math.floor(Math.random() * count) + 1;
 
-	r = r.toString(16);
-	g = g.toString(16);
-	b = b.toString(16);
+	marking.markingSrc = IMAGE_MAP[this.bodyType].markings[idx];
+	marking.brightness = Math.floor(Math.random() * 100) + 1;
+	// 50/50 shot of darker markings, rather than lighter
+	if (Math.random() <= 0.5) {
+		marking.brightness *= -1;
+	}
 
-	this.color = '#' + r + g + b;
+	marking.saturation = Math.floor(Math.random() * 100) + 1;
+	// 50/50 shot of less or more saturated markings
+	if (Math.random() <= 0.5) {
+		marking.brightness *= -1;
+	}
+
+	this.bodyMarking = marking;
+
+	//TODO: do wing markings as well
 }
 
 Generator.prototype.render = function renderFunc() {
-	this.positioner.placeImages(this.bodyType, this.wingType, this.color);
+	this.positioner.placeImages(this.bodyType, this.wingType, this.bodyMarking, this.color);
 	this.updateSelects();
 }
 
@@ -49,6 +61,20 @@ Generator.prototype.updateColors = function updateColorsFunc() {
 
 		this.render();
 	});
+
+	if (this.bodyMarking.markingSrc) {
+		var bodyMarking = this.bodyMarking;
+		Caman('#body-marking-canvas', function() {
+			this.revert();
+			this.newLayer(function() {
+				this.setBlendingMode('multiply');
+				this.fillColor(color);
+			});
+			this.brightness(bodyMarking.brightness);
+			this.saturation(bodyMarking.saturation);
+			this.render();
+		});
+	}
 
 	Caman('#wing-image canvas', function() {
 		this.revert();
@@ -95,6 +121,7 @@ Generator.prototype.updateBody = function updateBodyFunc(bodyType) {
 	// Only re-render on an actual change
 	if (bodyType !== this.bodyType) {
 		this.bodyType = bodyType;
+		this.bodyMarking = {};
 		// Wing type needs to be reset to default when the body is changed
 		this.wingType = 1;
 		this.render();
